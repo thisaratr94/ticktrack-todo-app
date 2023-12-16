@@ -10,6 +10,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PreDestroy;
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/tasks")
@@ -95,8 +97,23 @@ public class TaskHttpController {
         }
     }
 
-    @GetMapping
-    public void getAllTasks() {
-        System.out.println("getAllTasks()");
+    @GetMapping(produces = "application/json", params = {"email"})
+    public List<TaskDto> getAllTasks(String email) {
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM task WHERE email = ? ORDER BY id");
+            stm.setString(1, email);
+            ResultSet rst = stm.executeQuery();
+            List<TaskDto> taskList = new LinkedList<>();
+            while (rst.next()) {
+                int id = rst.getInt("id");
+                String description = rst.getString("description");
+                boolean status = rst.getBoolean("status");
+                taskList.add(new TaskDto(id, description, status, email));
+            }
+            return taskList;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
