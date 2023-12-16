@@ -1,6 +1,7 @@
 import './Header.css';
 import {auth} from "../../firebase.ts";
 import {signOut} from 'firebase/auth';
+import {Theme} from "../theme/Theme.tsx";
 
 export function Header() {
 
@@ -16,6 +17,7 @@ export function Header() {
                 TickTrack
             </h3>
             <div>
+                <Theme />
                 <button onClick={handleSignOut}
                         className="btn btn-outline-danger btn-sm">
                     <i className="bi bi-escape"></i>
